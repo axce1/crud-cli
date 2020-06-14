@@ -2,24 +2,22 @@ package repository;
 
 import model.Skill;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import static utils.FileHelper.getFile;
+import static utils.IOUtils.getFile;
+import static utils.IOUtils.getNextId;
 
 public class SkillRepositoryImpl implements SkillRepository{
 
-    RandomAccessFile file = null;
-    boolean isExists = false;
+    RandomAccessFile file;
     int index;
 
     @Override
     public Skill save(Skill skill) throws IOException {
-
+        boolean isExists = false;
         String numberString;
         String skillName;
         long id = 0;
@@ -32,82 +30,51 @@ public class SkillRepositoryImpl implements SkillRepository{
             id = Long.parseLong(numberString.substring(0, index));
             skillName = numberString.substring(index + 1);
 
-            if (skillName.equals(skill.getSkill())) {
+            if (skillName.equals(skill.getName())) {
                 isExists = true;
                 break;
             }
         }
 
         if (!isExists) {
-            numberString = ++id + "!" + skill.getSkill();
+            numberString = getNextId(id) + "~" + skill.getName();
             file.writeBytes(numberString);
             file.writeBytes(System.lineSeparator());
             System.out.println(" Skill added.");
+
         } else {
             System.out.println("Already exists");
-            isExists = false;
         }
+
+        isExists = false;
         file.close();
         return skill;
     }
 
     @Override
     public void delete(Skill skill) throws IOException {
-
         String numberString;
         String skillName;
-        long id;
+        long position;
 
         file = getFile("skill.txt");
 
         while (file.getFilePointer() < file.length()) {
+            position = file.getFilePointer();
             numberString = file.readLine();
             index = numberString.indexOf('!');
             skillName = numberString.substring(index + 1);
 
-            if (skillName.equals(skill.getSkill())) {
-                isExists = true;
+            if (skillName.equals(skill.getName())) {
+                byte[] remainingBytes = new byte[(int) (file.length() - file.getFilePointer())];
+                file.read(remainingBytes);
+                file.getChannel().truncate(position);
+                file.write(remainingBytes);
                 break;
             }
         }
 
-        if(isExists) {
-            File tmpFile = new File(UUID.randomUUID().toString() + "temp.txt");
-            RandomAccessFile tmpraf
-                    = new RandomAccessFile(tmpFile, "rw");
-            file.seek(0);
-
-            while (file.getFilePointer() < file.length()) {
-                numberString = file.readLine();
-                index = numberString.indexOf('!');
-                id = Long.parseLong(numberString.substring(0, index));
-                skillName = numberString.substring(index + 1);
-
-                if (skillName.equals(skill.getSkill()) || id == skill.getId()) {
-                    continue;
-                }
-                tmpraf.writeBytes(numberString);
-                tmpraf.writeBytes(System.lineSeparator());
-            }
-
-            file.seek(0);
-            tmpraf.seek(0);
-
-            while (tmpraf.getFilePointer() < tmpraf.length()) {
-                file.writeBytes(tmpraf.readLine());
-                file.writeBytes(System.lineSeparator());
-            }
-
-            file.setLength(tmpraf.length());
-            file.close();
-            tmpraf.close();
-            tmpFile.delete();
-
-            System.out.println(" Skill deleted. ");
-        } else {
-            file.close();
-            System.out.println(" Input skill does not exists. ");
-        }
+        file.close();
     }
 
     @Override
@@ -137,56 +104,30 @@ public class SkillRepositoryImpl implements SkillRepository{
     public Skill update(Skill skill) throws IOException {
         String numberString;
         long id;
+        long position;
 
         file = getFile("skill.txt");
 
         while (file.getFilePointer() < file.length()) {
+            position = file.getFilePointer();
             numberString = file.readLine();
             index = numberString.indexOf('!');
             id = Long.parseLong(numberString.substring(0, index));
 
             if (id == skill.getId()) {
-                isExists = true;
+                byte[] remainingBytes = new byte[(int) (file.length() - file.getFilePointer())];
+                file.read(remainingBytes);
+                file.getChannel().truncate(position);
+                numberString = id + "!" + skill.getName();
+                file.writeBytes(numberString);
+                file.writeBytes(System.lineSeparator());
+                file.write(remainingBytes);
+                System.out.println("Skill updated.");
                 break;
             }
         }
 
-        if(isExists) {
-            File tmpFile = new File(UUID.randomUUID().toString() + "temp.txt");
-            RandomAccessFile tmpraf
-                    = new RandomAccessFile(tmpFile, "rw");
-            file.seek(0);
-
-            while (file.getFilePointer() < file.length()) {
-                numberString = file.readLine();
-                index = numberString.indexOf('!');
-                id = Long.parseLong(numberString.substring(0, index));
-
-                if (id == skill.getId()) {
-                    numberString = id + "!" + skill.getSkill();
-                }
-                tmpraf.writeBytes(numberString);
-                tmpraf.writeBytes(System.lineSeparator());
-            }
-
-            file.seek(0);
-            tmpraf.seek(0);
-
-            while (tmpraf.getFilePointer() < tmpraf.length()) {
-                file.writeBytes(tmpraf.readLine());
-                file.writeBytes(System.lineSeparator());
-            }
-
-            file.setLength(tmpraf.length());
-            file.close();
-            tmpraf.close();
-            tmpFile.delete();
-
-            System.out.println(" Skill updated. ");
-        } else {
-            file.close();
-            System.out.println(" Input skill does not exists. ");
-        }
+        file.close();
         return skill;
     }
 

@@ -2,15 +2,15 @@ package model;
 
 public class Skill {
     Long id;
-    String skill;
+    String name;
 
-    public Skill(String skill) {
-        this.skill = skill;
+    public Skill(String name) {
+        this.name = name;
     }
 
-    public Skill(Long id, String skill) {
+    public Skill(Long id, String name) {
         this.id = id;
-        this.skill = skill;
+        this.name = name;
     }
 
     public Long getId() {
@@ -21,12 +21,12 @@ public class Skill {
         this.id = id;
     }
 
-    public String getSkill() {
-        return skill;
+    public String getName() {
+        return name;
     }
 
-    public void setSkill(String skill) {
-        this.skill = skill;
+    public void setName(String name) {
+        this.name = name;
     }
 
 
@@ -34,7 +34,7 @@ public class Skill {
     public String toString() {
         return "Skill{" +
                 "id=" + id +
-                ", skill='" + skill + '\'' +
+                ", skill='" + name + '\'' +
                 '}';
     }
 }
