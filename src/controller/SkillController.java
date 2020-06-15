@@ -30,6 +30,4 @@ public class SkillController {
     public List<Skill> findSkills() throws IOException {
         return repo.findAll();
     }
-
-
 }
