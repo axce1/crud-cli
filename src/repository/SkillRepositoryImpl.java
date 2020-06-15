@@ -14,6 +14,7 @@ public class SkillRepositoryImpl implements SkillRepository{
 
     RandomAccessFile file;
     int index;
+    private final String fname = "skill.txt";
 
     @Override
     public Skill save(Skill skill) throws IOException {
@@ -22,11 +23,11 @@ public class SkillRepositoryImpl implements SkillRepository{
         String skillName;
         long id = 0;
 
-        file = getFile("skill.txt");
+        file = getFile(fname);
 
         while (file.getFilePointer() < file.length()) {
             numberString = file.readLine();
-            index = numberString.indexOf('!');
+            index = numberString.indexOf('~');
             id = Long.parseLong(numberString.substring(0, index));
             skillName = numberString.substring(index + 1);
 
@@ -52,20 +53,19 @@ public class SkillRepositoryImpl implements SkillRepository{
     }
 
     @Override
-    public void delete(Skill skill) throws IOException {
+    public void delete(Long ID) throws IOException {
         String numberString;
-        String skillName;
         long position;
 
-        file = getFile("skill.txt");
+        file = getFile(fname);
 
         while (file.getFilePointer() < file.length()) {
             position = file.getFilePointer();
             numberString = file.readLine();
-            index = numberString.indexOf('!');
-            skillName = numberString.substring(index + 1);
+            index = numberString.indexOf('~');
+            Long id = Long.parseLong(numberString.substring(0, index));
 
-            if (skillName.equals(skill.getName())) {
+            if (id.equals(ID)) {
                 byte[] remainingBytes = new byte[(int) (file.length() - file.getFilePointer())];
                 file.read(remainingBytes);
                 file.getChannel().truncate(position);
@@ -83,11 +83,11 @@ public class SkillRepositoryImpl implements SkillRepository{
         String skillName;
         Skill skill = null;
 
-        file = getFile("skill.txt");
+        file = getFile(fname);
 
         while (file.getFilePointer() < file.length()) {
             numberString = file.readLine();
-            index = numberString.indexOf('!');
+            index = numberString.indexOf('~');
             Long id = Long.parseLong(numberString.substring(0, index));
             skillName = numberString.substring(index + 1);
 
@@ -106,12 +106,12 @@ public class SkillRepositoryImpl implements SkillRepository{
         long id;
         long position;
 
-        file = getFile("skill.txt");
+        file = getFile(fname);
 
         while (file.getFilePointer() < file.length()) {
             position = file.getFilePointer();
             numberString = file.readLine();
-            index = numberString.indexOf('!');
+            index = numberString.indexOf('~');
             id = Long.parseLong(numberString.substring(0, index));
 
             if (id == skill.getId()) {
@@ -137,11 +137,11 @@ public class SkillRepositoryImpl implements SkillRepository{
         String skillName;
         List<Skill> listSkill = new ArrayList<>();
 
-        file = getFile("skill.txt");
+        file = getFile(fname);
 
         while (file.getFilePointer() < file.length()) {
             numberString = file.readLine();
-            index = numberString.indexOf('!');
+            index = numberString.indexOf('~');
 
             Long id = Long.parseLong(numberString.substring(0, index));
             skillName = numberString.substring(index + 1);

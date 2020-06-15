@@ -27,7 +27,7 @@ public class Application {
         Skill findOne = repo.findById(3L);
         System.out.println(findOne.toString());
 
-        repo.delete(findOne);
+        repo.delete(3L);
 
         repo.save(skill4);
 

@@ -8,9 +8,9 @@ import java.util.List;
 public interface GenericRepository<T, ID> {
     T save(T t) throws IOException;
 
-    void delete(T t) throws IOException;
+    void delete(Long id) throws IOException;
 
-    Skill findById(Long id) throws IOException;
+    T findById(Long id) throws IOException;
 
     T update(T t) throws IOException;
 

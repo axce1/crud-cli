@@ -15,8 +15,8 @@ public class SkillController {
         return repo.save(skill);
     }
 
-    public void deleteSkill(Skill skill) throws IOException {
-        repo.delete(skill);
+    public void deleteSkill(Long id) throws IOException {
+        repo.delete(id);
     }
 
     public void updateSkill(Skill skill) throws IOException {
