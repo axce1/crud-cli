@@ -91,7 +91,7 @@ public class AccountRepositoryImpl implements AccountRepository{
 
         while (file.getFilePointer() < file.length()) {
             String numberString = file.readLine();
-            index = numberString.indexOf('!');
+            index = numberString.indexOf('~');
             Long id = Long.parseLong(numberString.substring(0, index));
             String skillName = numberString.substring(index + 1);
             String status = numberString.substring(index+2);

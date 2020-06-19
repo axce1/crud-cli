@@ -50,11 +50,10 @@ public class AccountView {
 
     public void findAllAccounts() throws IOException {
         List<Account> listAccounts = null;
-        System.out.println("Please enter findAll to find all skills: ");
+        System.out.println("Please enter findAll to find all accounts: ");
         String input = scanner.nextLine();
         if(input.equals("findAll"))
             listAccounts = accountController.findAccounts();
         System.out.println(listAccounts);
     }
-
 }

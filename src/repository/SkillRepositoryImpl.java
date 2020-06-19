@@ -118,7 +118,7 @@ public class SkillRepositoryImpl implements SkillRepository{
                 byte[] remainingBytes = new byte[(int) (file.length() - file.getFilePointer())];
                 file.read(remainingBytes);
                 file.getChannel().truncate(position);
-                numberString = id + "!" + skill.getName();
+                numberString = id + "~" + skill.getName();
                 file.writeBytes(numberString);
                 file.writeBytes(System.lineSeparator());
                 file.write(remainingBytes);
