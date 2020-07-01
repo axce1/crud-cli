@@ -1,15 +1,14 @@
 package controller;
 
 import model.Developer;
-import model.AccountStatus;
-import repository.DeveloperRepositoryImpl;
+import repository.DeveloperRepositoryTxtImpl;
 
 import java.io.IOException;
 import java.util.List;
 
 public class DeveloperController {
 
-    DeveloperRepositoryImpl repo = new DeveloperRepositoryImpl();
+    DeveloperRepositoryTxtImpl repo = new DeveloperRepositoryTxtImpl();
 
     public Developer createDeveloper(String nickName) throws IOException {
         Developer developer = new Developer(nickName);

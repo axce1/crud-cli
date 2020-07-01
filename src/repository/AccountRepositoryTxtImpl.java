@@ -1,5 +1,7 @@
 package repository;
 
+import model.Account;
+import model.AccountStatus;
 import model.Skill;
 
 import java.io.IOException;
@@ -10,17 +12,17 @@ import java.util.List;
 import static utils.IOUtils.getFile;
 import static utils.IOUtils.getNextId;
 
-public class SkillRepositoryImpl implements SkillRepository{
+public class AccountRepositoryTxtImpl implements AccountRepository{
 
     RandomAccessFile file;
     int index;
-    private final String fname = "skill.txt";
+    private final String fname = "account.txt";
 
     @Override
-    public Skill save(Skill skill) throws IOException {
+    public Account save(Account account) throws IOException {
         boolean isExists = false;
         String numberString;
-        String skillName;
+        String accName;
         long id = 0;
 
         file = getFile(fname);
@@ -29,19 +31,19 @@ public class SkillRepositoryImpl implements SkillRepository{
             numberString = file.readLine();
             index = numberString.indexOf('~');
             id = Long.parseLong(numberString.substring(0, index));
-            skillName = numberString.substring(index + 1);
+            accName = numberString.substring(index + 1);
 
-            if (skillName.equals(skill.getName())) {
+            if (accName.equals(account.getName())) {
                 isExists = true;
                 break;
             }
         }
 
         if (!isExists) {
-            numberString = getNextId(id) + "~" + skill.getName();
+            numberString = getNextId(id) + "~" + account.getName() + "~" + account.getStatus();
             file.writeBytes(numberString);
             file.writeBytes(System.lineSeparator());
-            System.out.println(" Skill added.");
+            System.out.println(" Account added.");
 
         } else {
             System.out.println("Already exists");
@@ -49,93 +51,94 @@ public class SkillRepositoryImpl implements SkillRepository{
 
         isExists = false;
         file.close();
-        return skill;
+        return account;
     }
 
     @Override
     public void delete(Long ID) throws IOException {
-        String numberString;
-        long position;
 
         file = getFile(fname);
 
         while (file.getFilePointer() < file.length()) {
-            position = file.getFilePointer();
-            numberString = file.readLine();
+            long position = file.getFilePointer();
+            String numberString = file.readLine();
             index = numberString.indexOf('~');
             Long id = Long.parseLong(numberString.substring(0, index));
 
             if (id.equals(ID)) {
+                Account account = findById(ID);
                 byte[] remainingBytes = new byte[(int) (file.length() - file.getFilePointer())];
                 file.read(remainingBytes);
                 file.getChannel().truncate(position);
+                numberString = id + "~" + account.getName() + "~" + AccountStatus.DELETED;
+                file.writeBytes(numberString);
+                file.writeBytes(System.lineSeparator());
                 file.write(remainingBytes);
-                break;
+                System.out.println("Account deleted.");
+
             }
         }
 
         file.close();
+
     }
 
     @Override
-    public Skill findById(Long ID) throws IOException {
-        String numberString;
-        String skillName;
-        Skill skill = null;
+    public Account findById(Long ID) throws IOException {
+        Account account = null;
 
         file = getFile(fname);
 
         while (file.getFilePointer() < file.length()) {
-            numberString = file.readLine();
+            String numberString = file.readLine();
             index = numberString.indexOf('~');
             Long id = Long.parseLong(numberString.substring(0, index));
-            skillName = numberString.substring(index + 1);
+            String skillName = numberString.substring(index + 1);
+            String status = numberString.substring(index+2);
 
             if (id.equals(ID)) {
-                skill = new Skill(id, skillName);
+                account = new Account(id, skillName, AccountStatus.valueOf(status));
                 break;
             }
         }
         // TODO как обработать null ?
-        return skill;
+        return account;
     }
 
     @Override
-    public Skill update(Skill skill) throws IOException {
-        String numberString;
-        long id;
-        long position;
+    public Account update(Account account) throws IOException {
 
         file = getFile(fname);
 
         while (file.getFilePointer() < file.length()) {
-            position = file.getFilePointer();
-            numberString = file.readLine();
+            long position = file.getFilePointer();
+            String numberString = file.readLine();
             index = numberString.indexOf('~');
-            id = Long.parseLong(numberString.substring(0, index));
+            Long id = Long.parseLong(numberString.substring(0, index));
 
-            if (id == skill.getId()) {
+            if (id.equals(account.getId())) {
                 byte[] remainingBytes = new byte[(int) (file.length() - file.getFilePointer())];
                 file.read(remainingBytes);
                 file.getChannel().truncate(position);
-                numberString = id + "~" + skill.getName();
+                numberString = id + "~" + account.getName() + "~" + account.getStatus();
                 file.writeBytes(numberString);
                 file.writeBytes(System.lineSeparator());
                 file.write(remainingBytes);
-                System.out.println("Skill updated.");
+                System.out.println("Account updated.");
                 break;
             }
         }
 
         file.close();
-        return skill;
+        return account;
     }
 
     @Override
-    public List<Skill> findAll() throws IOException {
+    public List<Account> findAll() throws IOException {
         String numberString;
-        String skillName;
-        List<Skill> listSkill = new ArrayList<>();
+        String name;
+        String status;
+        List<Account> listAccount = new ArrayList<>();
 
         file = getFile(fname);
 
@@ -144,9 +147,10 @@ public class SkillRepositoryImpl implements SkillRepository{
             index = numberString.indexOf('~');
 
             Long id = Long.parseLong(numberString.substring(0, index));
-            skillName = numberString.substring(index + 1);
-            listSkill.add(new Skill(id, skillName));
+            name = numberString.substring(index + 1);
+            status = numberString.substring(index + 2);
+            listAccount.add(new Account(id, name, AccountStatus.valueOf(status)));
         }
-        return listSkill;
+        return listAccount;
     }
 }

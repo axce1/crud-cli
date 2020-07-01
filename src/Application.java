@@ -1,5 +1,5 @@
 import model.Skill;
-import repository.SkillRepositoryImpl;
+import repository.SkillRepositoryTxtImpl;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,7 +11,7 @@ public class Application {
         Skill skill3 = new Skill("spring");
         Skill skill4 = new Skill("springboot");
 
-        SkillRepositoryImpl repo = new SkillRepositoryImpl();
+        SkillRepositoryTxtImpl repo = new SkillRepositoryTxtImpl();
 
         repo.save(skill1);
         Skill q = repo.findById(1L);

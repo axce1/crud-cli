@@ -2,16 +2,14 @@ package controller;
 
 import model.Account;
 import model.AccountStatus;
-import model.Skill;
-import repository.AccountRepositoryImpl;
-import repository.SkillRepositoryImpl;
+import repository.AccountRepositoryTxtImpl;
 
 import java.io.IOException;
 import java.util.List;
 
 public class AccountController {
 
-    AccountRepositoryImpl repo = new AccountRepositoryImpl();
+    AccountRepositoryTxtImpl repo = new AccountRepositoryTxtImpl();
 
     public Account createAccount(String name) throws IOException {
         Account account = new Account(name, AccountStatus.ACTIVE);

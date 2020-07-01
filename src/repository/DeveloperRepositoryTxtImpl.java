@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import static utils.IOUtils.getFile;
 import static utils.IOUtils.getNextId;
 
-public class DeveloperRepositoryImpl implements DeveloperRepository {
+public class DeveloperRepositoryTxtImpl implements DeveloperRepository {
 
     RandomAccessFile file;
     int index;

@@ -1,14 +1,14 @@
 package controller;
 
 import model.Skill;
-import repository.SkillRepositoryImpl;
+import repository.SkillRepositoryTxtImpl;
 
 import java.io.IOException;
 import java.util.List;
 
 public class SkillController {
 
-    SkillRepositoryImpl repo = new SkillRepositoryImpl();
+    SkillRepositoryTxtImpl repo = new SkillRepositoryTxtImpl();
 
     public Skill createSkill(String name) throws IOException {
         Skill skill = new Skill(name);
